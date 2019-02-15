@@ -18,10 +18,11 @@ import reactor.core.publisher.Mono;
  * @description:
  * @author: fanjunxiang
  * @date: 2019年01月19日
- **/
+ */
 @Slf4j
 @Service
 public class FilterDefinitionService {
+
     private final ReactiveMongoTemplate reactiveMongoTemplate;
 
     @Autowired
@@ -39,13 +40,11 @@ public class FilterDefinitionService {
     public Flux<FilterDefinition> getFilterList(Integer page, Integer size) {
 
         return reactiveMongoTemplate.find(
-                Query.query(Criteria.byExample(
-                        FilterDefinition.builder().deleted(false).build()
-                )).with(
-                        PageRequest.of(page, size, Sort.by(Sort.Order.desc(FilterDefinition.UPDATE_TIME)))
-                ),
-                FilterDefinition.class
-        );
+            Query.query(Criteria.byExample(FilterDefinition.builder().deleted(false).build()))
+                .with(
+                    PageRequest
+                        .of(page, size, Sort.by(Sort.Order.desc(FilterDefinition.UPDATE_TIME)))),
+            FilterDefinition.class);
     }
 
     /**
@@ -62,13 +61,13 @@ public class FilterDefinitionService {
      */
     public Mono<Boolean> updateFilter(String id, FilterDefinition filterDefinition) {
 
-        return reactiveMongoTemplate.findAndModify(
-                Query.query(Criteria.byExample(
-                        FilterDefinition.builder().id(id).deleted(false).build()
-                )),
+        return reactiveMongoTemplate
+            .findAndModify(
+                Query.query(
+                    Criteria.byExample(FilterDefinition.builder().id(id).deleted(false).build())),
                 MongoUtils.buildUpdate(filterDefinition),
-                FilterDefinition.class
-        ).hasElement();
+                FilterDefinition.class)
+            .hasElement();
     }
 
     /**
@@ -76,14 +75,11 @@ public class FilterDefinitionService {
      */
     public Mono<Boolean> deleteFilter(String id) {
 
-        return reactiveMongoTemplate.findAndModify(
-                Query.query(Criteria.byExample(
-                        FilterDefinition.builder().id(id).build()
-                )),
-                MongoUtils.buildUpdate(
-                        FilterDefinition.builder().id(id).deleted(true).build()
-                ),
-                FilterDefinition.class
-        ).hasElement();
+        return reactiveMongoTemplate
+            .findAndModify(
+                Query.query(Criteria.byExample(FilterDefinition.builder().id(id).build())),
+                MongoUtils.buildUpdate(FilterDefinition.builder().id(id).deleted(true).build()),
+                FilterDefinition.class)
+            .hasElement();
     }
 }

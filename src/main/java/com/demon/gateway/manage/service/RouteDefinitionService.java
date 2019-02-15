@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
  * @description:
  * @author: fanjunxiang
  * @date: 2019年01月19日
- **/
+ */
 @Slf4j
 @Service
 public class RouteDefinitionService {
@@ -30,7 +30,9 @@ public class RouteDefinitionService {
     private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
 
     @Autowired
-    public RouteDefinitionService(ReactiveMongoTemplate reactiveMongoTemplate, ReactiveRedisTemplate<String, String> reactiveRedisTemplate) {
+    public RouteDefinitionService(
+        ReactiveMongoTemplate reactiveMongoTemplate,
+        ReactiveRedisTemplate<String, String> reactiveRedisTemplate) {
         this.reactiveMongoTemplate = reactiveMongoTemplate;
         this.reactiveRedisTemplate = reactiveRedisTemplate;
     }
@@ -45,13 +47,11 @@ public class RouteDefinitionService {
     public Flux<RouteDefinition> getRouteList(Integer page, Integer size) {
 
         return reactiveMongoTemplate.find(
-                Query.query(Criteria.byExample(
-                        RouteDefinition.builder().deleted(false).build()
-                )).with(
-                        PageRequest.of(page, size, Sort.by(Sort.Order.desc(RouteDefinition.UPDATE_TIME)))
-                ),
-                RouteDefinition.class
-        );
+            Query.query(Criteria.byExample(RouteDefinition.builder().deleted(false).build()))
+                .with(
+                    PageRequest
+                        .of(page, size, Sort.by(Sort.Order.desc(RouteDefinition.UPDATE_TIME)))),
+            RouteDefinition.class);
     }
 
     /**
@@ -60,13 +60,14 @@ public class RouteDefinitionService {
     public Mono<RouteDefinition> saveRoute(RouteDefinition routeDefinition) {
         routeDefinition.setId(GenerateUniqueIdUtils.generateUniqueId());
 
-        return reactiveMongoTemplate.save(routeDefinition).doOnNext(rout ->
-                reactiveRedisTemplate.opsForHash().put(
-                        Constants.ROUTE_CACHE_KEY,
-                        rout.getId(),
-                        JsonUtils.toJsonString(rout)
-                ).subscribe()
-        );
+        return reactiveMongoTemplate
+            .save(routeDefinition)
+            .doOnNext(
+                rout ->
+                    reactiveRedisTemplate
+                        .opsForHash()
+                        .put(Constants.ROUTE_CACHE_KEY, rout.getId(), JsonUtils.toJsonString(rout))
+                        .subscribe());
     }
 
     /**
@@ -74,19 +75,19 @@ public class RouteDefinitionService {
      */
     public Mono<Boolean> updateRoute(String id, RouteDefinition routeDefinition) {
 
-        return reactiveMongoTemplate.findAndModify(
-                Query.query(Criteria.byExample(
-                        RouteDefinition.builder().id(id).deleted(false).build()
-                )),
+        return reactiveMongoTemplate
+            .findAndModify(
+                Query.query(
+                    Criteria.byExample(RouteDefinition.builder().id(id).deleted(false).build())),
                 MongoUtils.buildUpdate(routeDefinition),
-                RouteDefinition.class
-        ).doOnNext(rout ->
-                reactiveRedisTemplate.opsForHash().put(
-                        Constants.ROUTE_CACHE_KEY,
-                        rout.getId(),
-                        JsonUtils.toJsonString(rout)
-                ).subscribe()
-        ).hasElement();
+                RouteDefinition.class)
+            .doOnNext(
+                rout ->
+                    reactiveRedisTemplate
+                        .opsForHash()
+                        .put(Constants.ROUTE_CACHE_KEY, rout.getId(), JsonUtils.toJsonString(rout))
+                        .subscribe())
+            .hasElement();
     }
 
     /**
@@ -94,19 +95,17 @@ public class RouteDefinitionService {
      */
     public Mono<Boolean> deleteRoute(String id) {
 
-        return reactiveMongoTemplate.findAndModify(
-                Query.query(Criteria.byExample(
-                        RouteDefinition.builder().id(id).build()
-                )),
-                MongoUtils.buildUpdate(
-                        RouteDefinition.builder().id(id).deleted(true).build()
-                ),
-                RouteDefinition.class
-        ).doOnNext(rout ->
-                reactiveRedisTemplate.opsForHash().remove(
-                        Constants.ROUTE_CACHE_KEY,
-                        rout.getId()
-                ).subscribe()
-        ).hasElement();
+        return reactiveMongoTemplate
+            .findAndModify(
+                Query.query(Criteria.byExample(RouteDefinition.builder().id(id).build())),
+                MongoUtils.buildUpdate(RouteDefinition.builder().id(id).deleted(true).build()),
+                RouteDefinition.class)
+            .doOnNext(
+                rout ->
+                    reactiveRedisTemplate
+                        .opsForHash()
+                        .remove(Constants.ROUTE_CACHE_KEY, rout.getId())
+                        .subscribe())
+            .hasElement();
     }
 }

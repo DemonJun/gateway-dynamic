@@ -18,77 +18,68 @@ import reactor.core.publisher.Mono;
  * @description:
  * @author: fanjunxiang
  * @date: 2019年02月14日
- **/
+ */
 @Slf4j
 @Service
 public class PredicateDefinitionService {
-    private final ReactiveMongoTemplate reactiveMongoTemplate;
 
-    @Autowired
-    public PredicateDefinitionService(ReactiveMongoTemplate reactiveMongoTemplate) {
-        this.reactiveMongoTemplate = reactiveMongoTemplate;
-    }
+  private final ReactiveMongoTemplate reactiveMongoTemplate;
 
-    /**
-     * 获取规则列表
-     *
-     * @param page 页码
-     * @param size 每页显示数量
-     * @return 规则列表
-     */
-    public Flux<PredicateDefinition> getPredicateList(Integer page, Integer size) {
+  @Autowired
+  public PredicateDefinitionService(ReactiveMongoTemplate reactiveMongoTemplate) {
+    this.reactiveMongoTemplate = reactiveMongoTemplate;
+  }
 
-        return reactiveMongoTemplate.find(
-                Query.query(Criteria.byExample(
-                        PredicateDefinition.builder().deleted(false).build()
-                )).with(
-                        PageRequest.of(page, size, Sort.by(Sort.Order.desc(PredicateDefinition.UPDATE_TIME)))
-                ),
-                PredicateDefinition.class
-        );
-    }
+  /**
+   * 获取规则列表
+   *
+   * @param page 页码
+   * @param size 每页显示数量
+   * @return 规则列表
+   */
+  public Flux<PredicateDefinition> getPredicateList(Integer page, Integer size) {
 
-    /**
-     * 创建规则
-     */
-    public Mono<PredicateDefinition> savePredicate(PredicateDefinition predicateDefinition) {
-        predicateDefinition.setId(GenerateUniqueIdUtils.generateUniqueId());
+    return reactiveMongoTemplate.find(
+        Query.query(Criteria.byExample(PredicateDefinition.builder().deleted(false).build()))
+            .with(
+                PageRequest.of(
+                    page, size, Sort.by(Sort.Order.desc(PredicateDefinition.UPDATE_TIME)))),
+        PredicateDefinition.class);
+  }
 
-        return reactiveMongoTemplate.save(predicateDefinition);
-    }
+  /**
+   * 创建规则
+   */
+  public Mono<PredicateDefinition> savePredicate(PredicateDefinition predicateDefinition) {
+    predicateDefinition.setId(GenerateUniqueIdUtils.generateUniqueId());
 
-    /**
-     * 修改规则
-     */
-    public Mono<Boolean> updatePredicate(String id, PredicateDefinition predicateDefinition) {
+    return reactiveMongoTemplate.save(predicateDefinition);
+  }
 
-        return reactiveMongoTemplate.findAndModify(
-                Query.query(Criteria.byExample(
-                        PredicateDefinition.builder().id(id).deleted(false).build()
-                )),
-                MongoUtils.buildUpdate(predicateDefinition),
-                PredicateDefinition.class
-        ).hasElement().map(bool -> {
-            if (bool) {
+  /**
+   * 修改规则
+   */
+  public Mono<Boolean> updatePredicate(String id, PredicateDefinition predicateDefinition) {
 
-            }
-            return bool;
-        });
-    }
+    return reactiveMongoTemplate
+        .findAndModify(
+            Query.query(
+                Criteria.byExample(PredicateDefinition.builder().id(id).deleted(false).build())),
+            MongoUtils.buildUpdate(predicateDefinition),
+            PredicateDefinition.class)
+        .hasElement();
+  }
 
-    /**
-     * 删除规则
-     */
-    public Mono<Boolean> deletePredicate(String id) {
+  /**
+   * 删除规则
+   */
+  public Mono<Boolean> deletePredicate(String id) {
 
-        return reactiveMongoTemplate.findAndModify(
-                Query.query(Criteria.byExample(
-                        PredicateDefinition.builder().id(id).build()
-                )),
-                MongoUtils.buildUpdate(
-                        PredicateDefinition.builder().id(id).deleted(true).build()
-                ),
-                PredicateDefinition.class
-        ).hasElement();
-    }
+    return reactiveMongoTemplate
+        .findAndModify(
+            Query.query(Criteria.byExample(PredicateDefinition.builder().id(id).build())),
+            MongoUtils.buildUpdate(PredicateDefinition.builder().id(id).deleted(true).build()),
+            PredicateDefinition.class)
+        .hasElement();
+  }
 }
