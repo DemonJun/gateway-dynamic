@@ -28,7 +28,7 @@ public class RouteChangeListener implements ApplicationListener<ApplicationStart
         log.info("RouteChangeListener Started");
         reactiveRedisTemplate.listenToChannel(Constants.ROUTE_CHANGE_REDIS_CHANNEL_NAME)
                 .doOnNext(message -> {
-                    // 反序列化消息，刷新路由信息
+                    // 反序列化消息，发送刷新路由事件
                     log.info(message.getMessage());
                     gatewayRouteService.refreshRoute();
                 }).subscribe();
