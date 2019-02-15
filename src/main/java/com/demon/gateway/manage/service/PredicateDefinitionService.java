@@ -47,16 +47,14 @@ public class PredicateDefinitionService {
         PredicateDefinition.class);
   }
 
-    /**
-     * 创建规则
-     */
+  /** 创建规则 */
   public Mono<PredicateDefinition> savePredicate(PredicateDefinition predicateDefinition) {
     predicateDefinition.setId(GenerateUniqueIdUtils.generateUniqueId());
 
     return reactiveMongoTemplate.save(predicateDefinition);
   }
 
-    /** 修改规则 */
+  /** 修改规则 */
   public Mono<Boolean> updatePredicate(String id, PredicateDefinition predicateDefinition) {
 
     return reactiveMongoTemplate
@@ -68,7 +66,7 @@ public class PredicateDefinitionService {
         .hasElement();
   }
 
-    /** 删除规则 */
+  /** 删除规则 */
   public Mono<Boolean> deletePredicate(String id) {
 
     return reactiveMongoTemplate

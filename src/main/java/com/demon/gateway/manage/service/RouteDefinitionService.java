@@ -53,9 +53,7 @@ public class RouteDefinitionService {
         RouteDefinition.class);
   }
 
-  /**
-   * 创建路由
-   */
+  /** 创建路由 */
   public Mono<RouteDefinition> saveRoute(RouteDefinition routeDefinition) {
     routeDefinition.setId(GenerateUniqueIdUtils.generateUniqueId());
 
@@ -69,9 +67,7 @@ public class RouteDefinitionService {
                     .subscribe());
   }
 
-  /**
-   * 修改路由
-   */
+  /** 修改路由 */
   public Mono<Boolean> updateRoute(String id, RouteDefinition routeDefinition) {
 
     return reactiveMongoTemplate
@@ -89,9 +85,7 @@ public class RouteDefinitionService {
         .hasElement();
   }
 
-  /**
-   * 删除路由
-   */
+  /** 删除路由 */
   public Mono<Boolean> deleteRoute(String id) {
 
     return reactiveMongoTemplate
