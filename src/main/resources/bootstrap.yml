@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 192.168.
+        - 172.172.
