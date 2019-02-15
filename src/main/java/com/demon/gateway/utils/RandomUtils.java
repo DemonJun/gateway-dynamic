@@ -6,18 +6,16 @@ import java.util.Random;
 
 public class RandomUtils {
 
+  /**
+   * 生成随机盐，用于加密凭证
+   *
+   * @return
+   */
+  public static String generatorSalt() {
+    Random random = new SecureRandom();
+    byte[] salt = new byte[16];
+    random.nextBytes(salt);
 
-    /**
-     * 生成随机盐，用于加密凭证
-     *
-     * @return
-     */
-    public static String generatorSalt() {
-        Random random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-
-        return new String(salt, StandardCharsets.UTF_8);
-    }
-
+    return new String(salt, StandardCharsets.UTF_8);
+  }
 }

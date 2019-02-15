@@ -18,7 +18,7 @@ import java.util.Map;
  * @description:
  * @author: fanjunxiang
  * @date: 2019年02月14日
- **/
+ */
 @Document
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,17 +28,17 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Validated
 public class FilterDefinition implements Serializable {
-    private static final long serialVersionUID = -7283570126407203626L;
-    @Id
-    private String id;
-    @NotBlank(message = "过滤器名称不能为空")
-    private String name;
-    private Map<String, String> args;
+  private static final long serialVersionUID = -7283570126407203626L;
+  @Id private String id;
 
-    private String createTime;
-    private String updateTime;
-    private Boolean deleted;
+  @NotBlank(message = "过滤器名称不能为空")
+  private String name;
 
+  private Map<String, String> args;
 
-    public static final String UPDATE_TIME = "updateTime";
+  private String createTime;
+  private String updateTime;
+  private Boolean deleted;
+
+  public static final String UPDATE_TIME = "updateTime";
 }

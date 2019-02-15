@@ -23,63 +23,56 @@ import reactor.core.publisher.Mono;
 @Service
 public class FilterDefinitionService {
 
-    private final ReactiveMongoTemplate reactiveMongoTemplate;
+  private final ReactiveMongoTemplate reactiveMongoTemplate;
 
-    @Autowired
-    public FilterDefinitionService(ReactiveMongoTemplate reactiveMongoTemplate) {
-        this.reactiveMongoTemplate = reactiveMongoTemplate;
-    }
+  @Autowired
+  public FilterDefinitionService(ReactiveMongoTemplate reactiveMongoTemplate) {
+    this.reactiveMongoTemplate = reactiveMongoTemplate;
+  }
 
-    /**
-     * 获取过滤器列表
-     *
-     * @param page 页码
-     * @param size 每页显示数量
-     * @return 过滤器列表
-     */
-    public Flux<FilterDefinition> getFilterList(Integer page, Integer size) {
+  /**
+   * 获取过滤器列表
+   *
+   * @param page 页码
+   * @param size 每页显示数量
+   * @return 过滤器列表
+   */
+  public Flux<FilterDefinition> getFilterList(Integer page, Integer size) {
 
-        return reactiveMongoTemplate.find(
-            Query.query(Criteria.byExample(FilterDefinition.builder().deleted(false).build()))
-                .with(
-                    PageRequest
-                        .of(page, size, Sort.by(Sort.Order.desc(FilterDefinition.UPDATE_TIME)))),
-            FilterDefinition.class);
-    }
+    return reactiveMongoTemplate.find(
+        Query.query(Criteria.byExample(FilterDefinition.builder().deleted(false).build()))
+            .with(
+                PageRequest.of(page, size, Sort.by(Sort.Order.desc(FilterDefinition.UPDATE_TIME)))),
+        FilterDefinition.class);
+  }
 
-    /**
-     * 创建过滤器
-     */
-    public Mono<FilterDefinition> saveFilter(FilterDefinition filterDefinition) {
-        filterDefinition.setId(GenerateUniqueIdUtils.generateUniqueId());
+  /** 创建过滤器 */
+  public Mono<FilterDefinition> saveFilter(FilterDefinition filterDefinition) {
+    filterDefinition.setId(GenerateUniqueIdUtils.generateUniqueId());
 
-        return reactiveMongoTemplate.save(filterDefinition);
-    }
+    return reactiveMongoTemplate.save(filterDefinition);
+  }
 
-    /**
-     * 修改过滤器
-     */
-    public Mono<Boolean> updateFilter(String id, FilterDefinition filterDefinition) {
+  /** 修改过滤器 */
+  public Mono<Boolean> updateFilter(String id, FilterDefinition filterDefinition) {
 
-        return reactiveMongoTemplate
-            .findAndModify(
-                Query.query(
-                    Criteria.byExample(FilterDefinition.builder().id(id).deleted(false).build())),
-                MongoUtils.buildUpdate(filterDefinition),
-                FilterDefinition.class)
-            .hasElement();
-    }
+    return reactiveMongoTemplate
+        .findAndModify(
+            Query.query(
+                Criteria.byExample(FilterDefinition.builder().id(id).deleted(false).build())),
+            MongoUtils.buildUpdate(filterDefinition),
+            FilterDefinition.class)
+        .hasElement();
+  }
 
-    /**
-     * 删除过滤器
-     */
-    public Mono<Boolean> deleteFilter(String id) {
+  /** 删除过滤器 */
+  public Mono<Boolean> deleteFilter(String id) {
 
-        return reactiveMongoTemplate
-            .findAndModify(
-                Query.query(Criteria.byExample(FilterDefinition.builder().id(id).build())),
-                MongoUtils.buildUpdate(FilterDefinition.builder().id(id).deleted(true).build()),
-                FilterDefinition.class)
-            .hasElement();
-    }
+    return reactiveMongoTemplate
+        .findAndModify(
+            Query.query(Criteria.byExample(FilterDefinition.builder().id(id).build())),
+            MongoUtils.buildUpdate(FilterDefinition.builder().id(id).deleted(true).build()),
+            FilterDefinition.class)
+        .hasElement();
+  }
 }

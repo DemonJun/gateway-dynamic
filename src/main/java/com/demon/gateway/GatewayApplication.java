@@ -7,10 +7,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
-
-/**
- * @author jundemon
- */
+/** @author jundemon */
 @EnableEurekaClient
 @SpringCloudApplication
 @EnableReactiveMongoRepositories
@@ -18,8 +15,7 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 @Slf4j
 public class GatewayApplication {
 
-
-    public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(GatewayApplication.class, args);
+  }
 }
