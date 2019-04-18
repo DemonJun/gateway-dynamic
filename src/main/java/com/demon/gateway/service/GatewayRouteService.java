@@ -1,19 +1,14 @@
 package com.demon.gateway.service;
 
-import com.demon.gateway.utils.JsonUtils;
+import com.alibaba.fastjson.JSON;
+import com.demon.gateway.config.RouterConfigurationProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionRepository;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import static com.demon.gateway.constant.Constants.ROUTE_CACHE_KEY;
 
 /**
  * @description:
@@ -22,31 +17,22 @@ import static com.demon.gateway.constant.Constants.ROUTE_CACHE_KEY;
  */
 @Slf4j
 @Service
-@SuppressWarnings("ALL")
+@AutoConfigureAfter(RouterConfigurationProperties.class)
 public class GatewayRouteService
-    implements RouteDefinitionRepository, ApplicationEventPublisherAware {
-  private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
-  private ApplicationEventPublisher applicationEventPublisher;
+    implements RouteDefinitionRepository {
 
-  @Autowired
-  public GatewayRouteService(ReactiveRedisTemplate<String, String> reactiveRedisTemplate) {
-    this.reactiveRedisTemplate = reactiveRedisTemplate;
+  private final RouterConfigurationProperties routerConfigurationProperties;
+
+  public GatewayRouteService(
+      RouterConfigurationProperties routerConfigurationProperties) {
+    this.routerConfigurationProperties = routerConfigurationProperties;
   }
 
   @Override
   public Flux<RouteDefinition> getRouteDefinitions() {
+    log.info(JSON.toJSONString(routerConfigurationProperties.getRoutes()));
 
-    return reactiveRedisTemplate
-        .opsForHash()
-        .values(ROUTE_CACHE_KEY)
-        .map(
-            routeJson -> {
-              log.info("route info {}", routeJson);
-
-              return JsonUtils.fromJson(
-                  routeJson.toString(),
-                  org.springframework.cloud.gateway.route.RouteDefinition.class);
-            });
+    return Flux.fromIterable(routerConfigurationProperties.getRoutes());
   }
 
   @Override
@@ -59,12 +45,4 @@ public class GatewayRouteService
     return Mono.empty();
   }
 
-  public void refreshRoute() {
-    this.applicationEventPublisher.publishEvent(new RefreshRoutesEvent(this));
-  }
-
-  @Override
-  public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-    this.applicationEventPublisher = applicationEventPublisher;
-  }
 }

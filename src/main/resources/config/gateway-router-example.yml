@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    gateway:
+      custom:
+        routes:
+          - id: test
+            uri: https://www.baidu.com
+            filters:
+              - AddRequestHeader=header, addHeader
+              - AddRequestParameter=param, addParam
+            predicates:
+              - Path=/test

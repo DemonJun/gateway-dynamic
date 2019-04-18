@@ -1,5 +1,27 @@
+server:
+  port: 8888
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1KB
+
 spring:
+  application:
+    name: gateway-dynamic
   cloud:
+    nacos:
+      discovery:
+        namespace: 3258465e-f174-4383-b060-2ab80d766c47
+        server-addr: 47.101.179.54:8848
+      config:
+        server-addr: 47.101.179.54:8848
+        namespace: 3258465e-f174-4383-b060-2ab80d766c47
+        group: DEV
+        file-extension: yml
+        extConfig:
+          - dataId: gateway-router.yml
+            group: DEV
+            refresh: true
     inetutils:
       preferredNetworks:
         - 192.168.

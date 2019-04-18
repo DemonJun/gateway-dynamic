@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+
+logging:
+  level:
+    com:
+      demon: debug
+      alibaba: warn
+    org: warn
+    root: info
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} ${spring.application.name} [%thread] %-5level %logger{50} - %msg%n'
+
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000
